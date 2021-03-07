@@ -139,8 +139,22 @@ extract_reverse_results <- function(method, response, full_results = TRUE, flatt
                     'google' = response$results[1, ]['formatted_address'],
                     'opencage' = response$results['formatted'],
                     'mapbox' = response$features['place_name'],
-                    'mapquest' = response$results$locations[[1]]['street']
+                    'mapquest' = response$results$locations[[1]] # This is a full dataframe
   )
+  
+  # MapQuest only
+  # Formatted address needs to be extracted from several fields
+  # street,adminArea6...adminArea1
+  # As per the test, reverse geocoding always returns only 1 line. 
+  # Limit is not even a param, see:
+  # https://developer.mapquest.com/documentation/geocoding-api/reverse/get/
+  if (method == 'mapquest') {
+    address <-
+      as.character(address[, names(address) %in% c('street', paste0('adminArea', seq(6, 1))), ])
+    address <- address[address != '']
+    address <- paste0(address, collapse = ', ')
+    address <- data.frame(full_address = address)
+  }
   
   # extract other results (besides single line address)
   if (full_results == TRUE) {
@@ -154,7 +168,7 @@ extract_reverse_results <- function(method, response, full_results = TRUE, flatt
                       'google' = response$results[1, ][!names(response$results) %in% c('formatted_address')], 
                       'opencage' = response$results[!names(response$results) %in% c('formatted')],
                       'mapbox' = response$features[!names(response$features) %in% c('place_name')],
-                      'mapquest' = response$results$locations[[1]][!names(response$results$locations[[1]]) %in% 'street']
+                      'mapquest' = response$results$locations[[1]]
     )
     
     # add prefix to variable names that likely could be in our input dataset
