@@ -78,9 +78,11 @@ get_mapbox_url <- function(mapbox_permanent = FALSE) {
   return(paste0("https://api.mapbox.com/geocoding/v5/", endpoint, "/"))
 }
 
-get_mapquest_url <- function(mapquest_open = FALSE, reverse = FALSE) {
+get_mapquest_url <- function(mapquest_open = FALSE, reverse = FALSE, 
+                             batch = FALSE) {
   endpoint <- if (mapquest_open == TRUE) "http://open." else "http://www."
   url_keyword <- if (reverse == TRUE) 'reverse' else 'address'
+  url_keyword <- if (batch == TRUE) 'batch' else url_keyword
   return(paste0(endpoint,"mapquestapi.com/geocoding/v1/", url_keyword))
 }
 ## wrapper function for above functions

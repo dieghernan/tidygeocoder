@@ -24,7 +24,8 @@ reverse_geo(
   custom_query = list(),
   iq_region = "us",
   geocodio_v = 1.6,
-  mapbox_permanent = FALSE
+  mapbox_permanent = FALSE,
+  mapquest_open = FALSE
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ each geocoder service for usage details and limitations.
      in the "OPENCAGE_KEY" environmental variable.
   \item \code{"mapbox"}: Commercial Mapbox geocoder service. Requires an API Key to
      be stored in the "MAPBOX_API_KEY" environmental variable.
+  \item \code{"mapquest"}: Commercial MapQuest geocoder service. Requires an 
+     API Key to be stored in the "MAPQUEST_API_KEY" environmental variable.
 }}
 
 \item{address}{name of address column (output data)}
@@ -105,6 +108,9 @@ for the 'geocodio' method.}
 endpoint would be used. Note that this option should be used only if you 
 have applied for a permanent account. Unsuccessful requests made by an 
 account that does not have access to the endpoint may be billable.}
+
+\item{mapquest_open}{if TRUE then MapQuest would use the Open Geocoding 
+endpoint, that relies solely on data contributed to OpenStreetMap.}
 }
 \value{
 parsed geocoding results in tibble format

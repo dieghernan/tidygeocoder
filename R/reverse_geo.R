@@ -26,6 +26,8 @@ get_coord_parameters <- function(custom_query, method, lat, long) {
   } else if (method == 'mapbox') {
     custom_query[['to_url']] <-
       paste0(as.character(long), ',', as.character(lat))
+  } else if (method == 'mapquest') {
+    custom_query[['location']] <-  paste0(as.character(lat), ',', as.character(long))
   } else {
     stop('Invalid method. See ?reverse_geo')
   }
@@ -66,6 +68,8 @@ get_coord_parameters <- function(custom_query, method, lat, long) {
 #'      in the "OPENCAGE_KEY" environmental variable.
 #'   \item \code{"mapbox"}: Commercial Mapbox geocoder service. Requires an API Key to
 #'      be stored in the "MAPBOX_API_KEY" environmental variable.
+#'   \item \code{"mapquest"}: Commercial MapQuest geocoder service. Requires an 
+#'      API Key to be stored in the "MAPQUEST_API_KEY" environmental variable.
 #' }
 #' @param address name of address column (output data)
 #' @param limit number of results to return per coordinate. Note that not all methods support
@@ -105,7 +109,9 @@ get_coord_parameters <- function(custom_query, method, lat, long) {
 #'   endpoint would be used. Note that this option should be used only if you 
 #'   have applied for a permanent account. Unsuccessful requests made by an 
 #'   account that does not have access to the endpoint may be billable.
-#' 
+#' @param mapquest_open if TRUE then MapQuest would use the Open Geocoding 
+#'   endpoint, that relies solely on data contributed to OpenStreetMap.
+#'   
 #' @return parsed geocoding results in tibble format
 #' @examples
 #' \donttest{
@@ -120,7 +126,7 @@ get_coord_parameters <- function(custom_query, method, lat, long) {
 reverse_geo <- function(lat, long, method = 'osm', address = address, limit = 1, min_time = NULL, api_url = NULL,  
     timeout = 20, mode = '',  full_results = FALSE, unique_only = FALSE, return_coords = TRUE, flatten = TRUE, 
     batch_limit = 10000, verbose = FALSE, no_query = FALSE, custom_query = list(), iq_region = 'us', geocodio_v = 1.6,
-    mapbox_permanent = FALSE) {
+    mapbox_permanent = FALSE, mapquest_open = FALSE) {
 
   # NSE eval
   address <- rm_quote(deparse(substitute(address)))
@@ -228,8 +234,10 @@ reverse_geo <- function(lat, long, method = 'osm', address = address, limit = 1,
   
   # Set API URL (if not already set) ----------------------------------------
   if (is.null(api_url)) {
-    api_url <- get_api_url(method, reverse = TRUE, geocodio_v = geocodio_v, iq_region = iq_region,
-                           mapbox_permanent = mapbox_permanent)
+    api_url <- get_api_url(method, reverse = TRUE, geocodio_v = geocodio_v, 
+                           iq_region = iq_region,
+                           mapbox_permanent = mapbox_permanent,
+                           mapquest_open = mapquest_open)
   }
   if (length(api_url) == 0) stop('API URL not found')
   
