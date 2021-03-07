@@ -170,50 +170,77 @@ batch_mapquest <-
         get_mapquest_url(mapquest_open = mapquest_open, batch = TRUE)
     
     # Construct query
-    # Just the api key should be in the query
-    query_parameters <-
-      get_api_query('mapquest', list(api_key = get_key('mapquest')))
-    
-    # Construct body
-    # https://developer.mapquest.com/documentation/geocoding-api/batch/post/
-    names(address_df) <- "street"
-    
-    address_list <- list()
-    for (index in 1:nrow(address_df)) {
-      address_list[[index]] <- as.list(address_df[index,])
+    # Depends if single or multiple query
+    # Single: GET (similar to single but different endpoint)
+    # Multiple: POST
+    if (nrow(address_df) == 1) {
+      # Single via GET, similar to non-batch mode ----
+      custom_query[["location"]] <- address_df[["address"]]
+      
+      # Convert our generic query parameters into parameters specific to our API (method)
+      query_parameters <-
+        get_api_query('mapquest',
+                      list(limit = limit, api_key = get_key('mapquest')),
+                      custom_parameters = custom_query)
+      if (verbose == TRUE)
+        display_query(api_url, query_parameters)
+      
+      # Request via GET
+      content <-
+        jsonlite::fromJSON(query_api(api_url, query_parameters))
+      results <-
+        extract_results("mapquest",
+                        content,
+                        full_results = TRUE,
+                        flatten = TRUE)
+      names(results)[names(results) == 'lat'] <- lat
+      names(results)[names(results) == 'lng'] <- long
+    } else {
+      # Multiple via POST ----
+      # https://developer.mapquest.com/documentation/geocoding-api/batch/post/
+      # Just the api key should be in the query
+      query_parameters <-
+        get_api_query('mapquest', list(api_key = get_key('mapquest')))
+      
+      # Construct body
+      # Options should be included on the body
+      options_body <- get_api_query('mapquest',
+                                    list(limit = limit),
+                                    custom_parameters = custom_query)
+      # Now get the body
+      # List with locations and options
+      body <- list(locations = address_df[["address"]],
+                   options = options_body)
+      # Display - Bit weird, could be improved
+      if (verbose == TRUE)
+        display_query(api_url,
+                      get_api_query(
+                        'mapquest',
+                        list(api_key = get_key('mapquest')),
+                        custom_parameters = list(
+                          locations = unlist(body$locations),
+                          options = unlist(body$options)
+                        )
+                      ))
+      
+      raw_content <- query_api(
+        api_url,
+        query_parameters,
+        mode = 'list',
+        input_list = body,
+        timeout = timeout
+      )
+      
+      content <- jsonlite::fromJSON(raw_content, flatten = TRUE)
+      
+      # combine list of dataframes into a single tibble. Column names may differ between the dataframes
+      results <- dplyr::bind_rows(content$results$locations)
+      
+      # rename lat/long columns
+      names(results)[names(results) == 'latLng.lat'] <- lat
+      names(results)[names(results) == 'latLng.lng'] <- long
     }
-    # Options should be included on the body
-    options_body <- get_api_query('mapquest',
-                                  list(limit = limit),
-                                  custom_parameters = custom_query)
-    # Now get the body
-    # List with locations and options
-    body <- list(locations = address_list,
-                 options = options_body)
-    # Display
-    if (verbose == TRUE)
-      display_query(api_url,
-                    get_api_query('mapquest',
-                                  list(api_key = get_key('mapquest')),
-                                  custom_parameters = body))
-    
-    raw_content <- query_api(
-      api_url,
-      query_parameters,
-      mode = 'list',
-      input_list = body,
-      timeout = timeout
-    )
-    
-    content <- jsonlite::fromJSON(raw_content, flatten = TRUE)
-    
-    # combine list of dataframes into a single tibble. Column names may differ between the dataframes
-    results <- dplyr::bind_rows(content$results$locations)
-    
-    # rename lat/long columns
-    names(results)[names(results) == 'latLng.lat'] <- lat
-    names(results)[names(results) == 'latLng.lng'] <- long
-    
+    # Prepare output----
     if (full_results == FALSE)
       return(results[c(lat, long)])
     else
