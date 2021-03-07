@@ -139,3 +139,83 @@ verbose = FALSE, api_url = NULL, geocodio_v = 1.6, limit = 1, ...) {
   if (full_results == FALSE)  return(results[c(lat, long)])
   else return(cbind(results[c(lat,long)], results[!names(results) %in% c(lat, long)]))
 }
+
+
+# Batch geocoding with mapquest
+# ... are arguments passed from the geo() function
+# https://developer.mapquest.com/documentation/geocoding-api/batch/get/
+batch_mapquest <-
+  function(unique_addresses,
+           lat = 'lat',
+           long = 'long',
+           timeout = 20,
+           full_results = FALSE,
+           custom_query = list(),
+           verbose = FALSE,
+           api_url = NULL,
+           geocodio_v = 1.6,
+           limit = 1,
+           mapquest_open = FALSE,
+           ...) {
+    # limit the dataframe to legitimate arguments
+    address_df <-
+      unique_addresses[names(unique_addresses) %in% get_generic_parameters('mapquest', address_only = TRUE)]
+    
+    # Display error on request above the limit
+    if (nrow(address_df) > 100) {
+      stop("MapQuest Batch limit of 100 addresses.", call. = FALSE)
+    }
+    if (is.null(api_url))
+      api_url <-
+        get_mapquest_url(mapquest_open = mapquest_open, batch = TRUE)
+    
+    # Construct query
+    # Just the api key should be in the query
+    query_parameters <-
+      get_api_query('mapquest', list(api_key = get_key('mapquest')))
+    
+    # Construct body
+    # https://developer.mapquest.com/documentation/geocoding-api/batch/post/
+    names(address_df) <- "street"
+    
+    address_list <- list()
+    for (index in 1:nrow(address_df)) {
+      address_list[[index]] <- as.list(address_df[index,])
+    }
+    # Options should be included on the body
+    options_body <- get_api_query('mapquest',
+                                  list(limit = limit),
+                                  custom_parameters = custom_query)
+    # Now get the body
+    # List with locations and options
+    body <- list(locations = address_list,
+                 options = options_body)
+    # Display
+    if (verbose == TRUE)
+      display_query(api_url,
+                    get_api_query('mapquest',
+                                  list(api_key = get_key('mapquest')),
+                                  custom_parameters = body))
+    
+    raw_content <- query_api(
+      api_url,
+      query_parameters,
+      mode = 'list',
+      input_list = body,
+      timeout = timeout
+    )
+    
+    content <- jsonlite::fromJSON(raw_content, flatten = TRUE)
+    
+    # combine list of dataframes into a single tibble. Column names may differ between the dataframes
+    results <- dplyr::bind_rows(content$results$locations)
+    
+    # rename lat/long columns
+    names(results)[names(results) == 'latLng.lat'] <- lat
+    names(results)[names(results) == 'latLng.lng'] <- long
+    
+    if (full_results == FALSE)
+      return(results[c(lat, long)])
+    else
+      return(cbind(results[c(lat, long)], results[!names(results) %in% c(lat, long)]))
+  }

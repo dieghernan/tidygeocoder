@@ -125,3 +125,15 @@ lat_longs <- some_addresses %>%
   )
 
 lat_longs
+
+# Force batch
+some_addresses %>%
+  geocode(
+    addr,
+    method = "mapquest",
+    lat = latitude,
+    long = longitude,
+    full_results = TRUE,
+    mode = "batch",
+    verbose = TRUE
+  )
