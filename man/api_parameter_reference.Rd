@@ -24,6 +24,11 @@ Links to API documentation for each geocoder service are below.
  \item \href{https://developers.google.com/maps/documentation/geocoding/overview}{Google}
  \item \href{https://opencagedata.com/api}{OpenCage}
  \item \href{https://docs.mapbox.com/api/search/geocoding/}{Mapbox}
+ \item MapQuest:
+   \itemize{
+     \item \href{https://developer.mapquest.com/documentation/geocoding-api/}{Geocoding}
+     \item \href{https://developer.mapquest.com/documentation/open/geocoding-api/}{Open Geocoding}
+   }
 }
 }
 \usage{

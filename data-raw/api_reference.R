@@ -11,12 +11,15 @@
 # Google: https://developers.google.com/maps/documentation/geocoding/overview
 # OpenCage: https://opencagedata.com/api
 # Mapbox: https://docs.mapbox.com/api/search/geocoding/
+# MapQuest: https://developer.mapquest.com/documentation/geocoding-api/
+#           https://developer.mapquest.com/documentation/open/geocoding-api/
 
 ### Usage Policies
 # OSM: https://operations.osmfoundation.org/policies/nominatim/
 # Google: https://developers.google.com/maps/documentation/geocoding/usage-and-billing
 # OpenCage: https://opencagedata.com/pricing
 # Mapbox: https://www.mapbox.com/pricing/#search
+# MapQuest: https://developer.mapquest.com/plans
 
 ## Note: generic_name = 'address' is for one-line addresses
 ## If generic_name == NA then that means the parameter is specific to a given API/method
@@ -97,11 +100,20 @@ api_parameter_reference <- tibble::tribble(
   ########################### Mapbox #################################
   # Mapbox returns json by default (defined by endpoint in URL) 
   # Mapbox requires an api_key
-  # Implementation of mapbox.places endpoint
+
   
   'mapbox', 'api_key',    'access_token',  NA,                  TRUE,
   'mapbox', 'address',    'search_text',   NA,                  TRUE,  
   'mapbox', 'limit',      'limit',        '1',                  FALSE,
+  
+  ########################### MapQuest #################################
+  # MapQuest returns json by default
+  # MapQuest requires an api_key
+
+  
+  'mapquest', 'api_key',    'key',           NA,                  TRUE,
+  'mapquest', 'address',    'location',      NA,                  TRUE,  
+  'mapquest', 'limit',      'maxResults',    '1',                 FALSE,
 )
 
 usethis::use_data(api_parameter_reference, overwrite = TRUE)
