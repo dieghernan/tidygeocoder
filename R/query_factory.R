@@ -8,7 +8,8 @@ get_key <- function(method) {
          'iq' = "LOCATIONIQ_API_KEY",
          'google' = "GOOGLEGEOCODE_API_KEY",
          'opencage' = "OPENCAGE_KEY",
-         'mapbox' = "MAPBOX_API_KEY"
+         'mapbox' = "MAPBOX_API_KEY",
+         'mapquest' = "MAPQUEST_API_KEY"
          )
   # load api key from environmental variable
   key <- Sys.getenv(env_var)
@@ -77,12 +78,17 @@ get_mapbox_url <- function(mapbox_permanent = FALSE) {
   return(paste0("https://api.mapbox.com/geocoding/v5/", endpoint, "/"))
 }
 
+get_mapquest_url <- function(mapquest_open = FALSE, reverse = FALSE) {
+  endpoint <- if (mapquest_open == TRUE) "http://open." else "http://www."
+  url_keyword <- if (reverse == TRUE) 'reverse' else 'address'
+  return(paste0(endpoint,"mapquestapi.com/geocoding/v1/", url_keyword))
+}
 ## wrapper function for above functions
 ### IMPORTANT: if arguments are changed in this definition then make sure to 
 ### update reverse_geo.R and geo.R where this function is called.
 get_api_url <- function(method, reverse = FALSE, return_type = 'locations',
             search = 'onelineaddress', geocodio_v = 1.6, iq_region = 'us', 
-            mapbox_permanent = FALSE) {
+            mapbox_permanent = FALSE, mapquest_open = FALSE) {
   return(switch(method,
          "osm" = get_osm_url(reverse = reverse),
          "census" = get_census_url(return_type, search),
@@ -90,7 +96,8 @@ get_api_url <- function(method, reverse = FALSE, return_type = 'locations',
          "iq" = get_iq_url(iq_region, reverse = reverse),
          "opencage" = get_opencage_url(), # same url as forward geocoding
          "google" = get_google_url(), # same url as forward geocoding
-         "mapbox" = get_mapbox_url(mapbox_permanent) # same url as fwd geocoding
+         "mapbox" = get_mapbox_url(mapbox_permanent), # same url as fwd geocoding
+         "mapquest" = get_mapquest_url(mapquest_open, reverse = reverse)
   ))
 }
 

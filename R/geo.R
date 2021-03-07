@@ -112,6 +112,8 @@ batch_func_map <- list(
 #'   endpoint would be used. Note that this option should be used only if you 
 #'   have applied for a permanent account. Unsuccessful requests made by an 
 #'   account that does not have access to the endpoint may be billable.
+#' @param mapquest_open if TRUE then MapQuest would use the Open Geocoding 
+#'   endpoint, that relies solely on data contributed to OpenStreetMap.
 #'    
 #' @return parsed geocoding results in tibble format
 #' @examples
@@ -134,7 +136,7 @@ geo <- function(address = NULL,
     mode = '', full_results = FALSE, unique_only = FALSE, return_addresses = TRUE, 
     flatten = TRUE, batch_limit = 10000, verbose = FALSE, no_query = FALSE, 
     custom_query = list(), return_type = 'locations', iq_region = 'us', geocodio_v = 1.6, 
-    param_error = TRUE, mapbox_permanent = FALSE) {
+    param_error = TRUE, mapbox_permanent = FALSE, mapquest_open = FALSE) {
 
   # NSE - Quote unquoted vars without double quoting quoted vars
   # end result - all of these variables become character values
@@ -158,7 +160,7 @@ geo <- function(address = NULL,
             is.logical(full_results), is.logical(unique_only), is.logical(return_addresses),
             is.numeric(limit), is.numeric(batch_limit), is.numeric(timeout),
             limit >= 1, batch_limit >= 1, timeout >= 0, is.list(custom_query),
-            is.logical(mapbox_permanent))
+            is.logical(mapbox_permanent), is.logical(mapquest_open))
   
   if (!(method %in% c('cascade', method_services))) {
     stop('Invalid method argument. See ?geo')
@@ -347,7 +349,7 @@ geo <- function(address = NULL,
   if (is.null(api_url)) {
     api_url <- get_api_url(method, reverse = FALSE, return_type = return_type,
                 search = search, geocodio_v = geocodio_v, iq_region = iq_region, 
-                mapbox_permanent = mapbox_permanent)
+                mapbox_permanent = mapbox_permanent, mapquest_open = mapquest_open)
   }
   if (length(api_url) == 0) stop('API URL not found')
   

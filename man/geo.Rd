@@ -33,7 +33,8 @@ geo(
   iq_region = "us",
   geocodio_v = 1.6,
   param_error = TRUE,
-  mapbox_permanent = FALSE
+  mapbox_permanent = FALSE,
+  mapquest_open = FALSE
 )
 }
 \arguments{
@@ -150,6 +151,9 @@ If method = 'cascade' then no errors will be thrown.}
 endpoint would be used. Note that this option should be used only if you 
 have applied for a permanent account. Unsuccessful requests made by an 
 account that does not have access to the endpoint may be billable.}
+
+\item{mapquest_open}{if TRUE then MapQuest would use the Open Geocoding 
+endpoint, that relies solely on data contributed to OpenStreetMap.}
 }
 \value{
 parsed geocoding results in tibble format
