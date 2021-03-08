@@ -8,7 +8,8 @@
 # the reverse_geo() function references this list to find reverse batch geocoding functions (reverse_batch_geocoding.R)
 # maps method names to batch functions
 reverse_batch_func_map <- list(
-  geocodio = reverse_batch_geocodio
+  geocodio = reverse_batch_geocodio,
+  mapquest = reverse_batch_mapquest
 )
 
 

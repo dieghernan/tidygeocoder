@@ -37,3 +37,119 @@ verbose = FALSE, api_url = NULL, geocodio_v = 1.6, limit = 1, ...) {
   if (full_results == FALSE)  return(results[address])
   else return(cbind(results[address], results[!names(results) %in% c(address)]))
 }
+
+# Reverse Batch geocoding with mapquest
+# ... are arguments passed from the reverse_geo() function
+# https://developer.mapquest.com/documentation/geocoding-api/batch/get/
+# https://developer.mapquest.com/documentation/geocoding-api/batch/post/
+reverse_batch_mapquest <-
+  function(lat,
+           long,
+           address = 'address',
+           timeout = 20,
+           full_results = FALSE,
+           custom_query = list(),
+           verbose = FALSE,
+           api_url = NULL,
+           geocodio_v = 1.6,
+           limit = 1,
+           mapquest_open = FALSE,
+           ...) {
+    # limit the dataframe to legitimate arguments
+    latLong <- data.frame(lat = lat,
+                          long = long)
+    latLng <- as.character(paste0(latLong$lat, ",", latLong$long))
+    print(latLong)
+    # Display error on request above the limit
+    if (nrow(latLong) > 100) {
+      stop("MapQuest Batch limit of 100 addresses.", call. = FALSE)
+    }
+    if (is.null(api_url))
+      api_url <-
+      get_mapquest_url(mapquest_open = mapquest_open,
+                       batch = TRUE,
+                       reverse = TRUE)
+    
+    # Construct query
+    # Depends if single or multiple query
+    # Single: GET (similar to single but different endpoint)
+    # Multiple: POST
+    if (nrow(latLong) == 1) {
+      # Single via GET, similar to non-batch mode ----
+      custom_query[["location"]] <- address_df[["address"]]
+      
+      # Convert our generic query parameters into parameters specific to our API (method)
+      query_parameters <-
+        get_api_query('mapquest',
+                      list(limit = limit, api_key = get_key('mapquest')),
+                      custom_parameters = custom_query)
+      if (verbose == TRUE)
+        display_query(api_url, query_parameters)
+      
+      # Request via GET
+      content <-
+        jsonlite::fromJSON(query_api(api_url, query_parameters))
+      results <-
+        extract_results("mapquest",
+                        content,
+                        full_results = TRUE,
+                        flatten = TRUE)
+      names(results)[names(results) == 'lat'] <- lat
+      names(results)[names(results) == 'lng'] <- long
+    } else {
+      # Multiple via POST ----
+      # https://developer.mapquest.com/documentation/geocoding-api/batch/post/
+      # Just the api key should be in the query
+      query_parameters <-
+        get_api_query('mapquest', list(api_key = get_key('mapquest')))
+      
+      # Construct body
+      # Options should be included on the body
+      options_body <- get_api_query('mapquest',
+                                    list(limit = limit),
+                                    custom_parameters = custom_query)
+      # Now get the body
+      # List with locations and options
+      body <- list(locations = latLng,
+                   options = options_body)
+      # Display - Bit weird, could be improved
+      if (verbose == TRUE)
+        display_query(api_url,
+                      get_api_query(
+                        'mapquest',
+                        list(api_key = get_key('mapquest')),
+                        custom_parameters = list(
+                          locations = unlist(body$locations),
+                          options = unlist(body$options)
+                        )
+                      ))
+      
+      raw_content <- query_api(
+        api_url,
+        query_parameters,
+        mode = "list",
+        input_list = body,
+        timeout = timeout
+      )
+      
+      content <- jsonlite::fromJSON(raw_content, flatten = TRUE)
+      
+      result_list <- content$results$locations
+      result_list_filled <-
+        lapply(result_list, filler_df, c('street'))
+      results <- dplyr::bind_rows(result_list_filled)
+
+      full_address <-
+        tibble::as_tibble(results[, names(results) %in% c("street", paste0("adminArea", seq(6, 1)))])
+      results$full_address <-
+        apply(full_address, 1, function(x) {
+          x1 <- x[!is.na(x)]
+          paste(x1, collapse = ", ")
+        })
+
+      names(results)[names(results) == 'full_address'] <- address
+    }
+    # Prepare output----
+    if (full_results == FALSE)  return(results[address])
+    else return(cbind(results[address], results[!names(results) %in% c(address)]))
+  }
