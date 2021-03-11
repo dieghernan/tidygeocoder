@@ -1,135 +1,107 @@
 limit <- 1
 custom_query <- list(a = 1)
 verbose <- TRUE
+timeout <- 20
 lat <- "latit"
 long <- "longit"
-api_url <-
-  get_mapquest_url(mapquest_open = FALSE, batch = TRUE)
-address_df <- tibble::tribble(~address, "Madrid, ES", "Denver, CO")
-timeout <- 20
+api_url <- "http://www.mapquestapi.com/geocoding/v1/batch"
+
+address_df <- tibble::tribble(~address, "Madrid, ES", "hahuauhauauhu", "Segovia")
 
 
-if (is.null(api_url)) {
-  api_url <-
-    get_mapquest_url(mapquest_open = mapquest_open, batch = TRUE)
-}
+if (is.null(api_url)) api_url <- "http://www.mapquestapi.com/geocoding/v1/batch"
 
-# Construct query
-# Just the api key should be in the query
-query_parameters <-
-  get_api_query("mapquest", list(api_key = get_key("mapquest")))
+# Construct query - for display only
 
-# Construct body
-# https://developer.mapquest.com/documentation/geocoding-api/batch/post/
-# Options should be included on the body
-options_body <- get_api_query("mapquest",
-  list(limit = limit),
-  custom_parameters = custom_query
-)
-# Now get the body
-# List with locations and options
-body <- list(
-  locations = address_df[["address"]],
-  options = options_body
-)
-# Display
-if (verbose == TRUE) {
-  display_query(
-    api_url,
-    get_api_query("mapquest",
-      list(api_key = get_key("mapquest")),
-      custom_parameters = list(
-        locations = unlist(body$locations),
-        options = unlist(body$options)
-      )
-    )
-  )
-}
-
-raw_content <- query_api(
-  api_url,
-  query_parameters,
-  mode = "list",
-  input_list = body,
-  timeout = timeout
-)
-
-content <- jsonlite::fromJSON(raw_content, flatten = TRUE)
-
-results <- dplyr::bind_rows(content$results$locations)
-results
-
-names(results)[names(results) == "latLng.lat"] <- lat
-names(results)[names(results) == "latLng.lng"] <- long
-
-# Single line
-address_df <- tibble::tribble(~address, "Madrid, ES")
-
-custom_query[["location"]] <- address_df[["address"]]
-# Convert our generic query parameters into parameters specific to our API (method)
 query_parameters <- get_api_query("mapquest", list(limit = limit, api_key = get_key("mapquest")),
   custom_parameters = custom_query
 )
 if (verbose == TRUE) display_query(api_url, query_parameters)
-# Request via GET
-content <- jsonlite::fromJSON(query_api(api_url, query_parameters))
-results <- extract_results("mapquest", content, full_results = TRUE, flatten = TRUE)
 
-glimpse(results)
 
+# https://developer.mapquest.com/documentation/geocoding-api/batch/post/
+# Construct POST query
+
+# A. Only certain parameters should be in the POST call
+
+body_params <- query_parameters[!names(query_parameters) %in% c("key", "callback")]
+query_parameters <- query_parameters[names(query_parameters) %in% c("key", "callback")]
+
+# B. Construct Body
+address_list <- list(
+  locations = address_df[["address"]],
+  options = body_params
+)
+
+# Query API
+raw_content <- query_api(api_url, query_parameters, mode = "list", input_list = address_list, timeout = timeout)
+
+# Note that flatten here is necessary in order to get rid of the
+# nested dataframes that would cause dplyr::bind_rows (or rbind) to fail
+content <- jsonlite::fromJSON(raw_content, flatten = TRUE)
+
+
+if (content$info$statuscode != 0) {
+  if (verbose) message(content$info$messages, ". Returning NA results")
+  return(get_na_value(lat, long, rows = nrow(address_df)))
+}
+
+# combine list of dataframes into a single tibble. Column names may differ between the dataframes
+results <- dplyr::bind_rows(content$results$locations)
+
+names(results)[names(results) == "latLng.lat"] <- lat
+names(results)[names(results) == "latLng.lng"] <- long
+
+tibble::as_tibble(results)
 
 
 # Test live -----
-tidygeocoder::geo(addresses <- c("Denver,CO", "Boulder,CO", "Santiago"),
+library(tibble)
+
+
+tidygeocoder::geo(
+  address = c("Denver,CO", "Boulder,CO", "Santiago"),
   method = "mapquest", mode = "batch", verbose = TRUE
 )
 
-tidygeocoder::geo(addresses <- c("Denver,CO", "Boulder,CO", "Santiago"),
-  full_results = TRUE,
-  method = "mapquest", mode = "batch", verbose = TRUE
-)
-
-# single line
-tidygeocoder::geo(addresses <- c("Denver"),
-  lat = "latitude",
-  long = "longitude",
-  full_results = TRUE,
-  return_addresses = FALSE,
-  limit = 5,
-  method = "mapquest", mode = "batch", verbose = TRUE
-)
-tidygeocoder::geo(addresses <- c("Denver"),
-  lat = "latitude",
-  long = "longitude",
-  full_results = TRUE,
-  return_addresses = TRUE,
-  method = "mapquest", mode = "batch", verbose = TRUE
-)
-
-s <- tidygeocoder::geo(addresses <- c("Santiago"),
-  full_results = TRUE,
+tidygeocoder::geo(
+  address = c("Denver,CO", "Boulder,CO", "Santiago"),
   method = "mapquest", mode = "batch", verbose = TRUE,
-  limit = 10,
-  return_addresses = FALSE,
-  custom_query = list(thumbMaps = FALSE)
+  mapquest_open = TRUE
 )
-tibble::glimpse(s)
 
-tidygeocoder::geo(addresses <- c("Madrid, Spain"),
+# Single address
+tidygeocoder::geo(address = "Segovia", method = "mapquest", full_results = TRUE)
+tidygeocoder::geo(address = "Segovia", method = "mapquest", mode = "batch", full_results = TRUE)
+
+
+
+tidygeocoder::geo(
+  address = c(
+    "Denver,CO", "Boulder,CO",
+    "abhnaabunu ", "Santiago"
+  ),
+  return_addresses = FALSE,
   full_results = TRUE,
+  limit = 3,
   method = "mapquest", mode = "batch", verbose = TRUE
 )
 
-tidygeocoder::geo(addresses <- c("Denver,CO", "Boulder,CO", "Santiago"),
-  return_addresses = FALSE,
+
+tidygeocoder::geo(
+  address = c(
+    "Denver,CO", "Boulder,CO",
+    "abhnaabunu ", "Santiago"
+  ),
   full_results = TRUE,
-  limit = 7,
-  method = "mapquest", mode = "batch", verbose = TRUE
+  limit = 1,
+  method = "mapquest", verbose = TRUE, mapquest_open = TRUE
 )
+
 
 # Now try limit
 library(mapSpain)
-names <- esp_munic.sf[1:101, ]$name
+names <- esp_munic.sf$name
 
 tidygeocoder::geo(addresses <- paste(names, "Spain"),
   return_addresses = TRUE,
@@ -138,12 +110,38 @@ tidygeocoder::geo(addresses <- paste(names, "Spain"),
   method = "mapquest", mode = "batch", verbose = TRUE
 )
 
-names2 <- esp_munic.sf[1:30, ]$name
-
-full <- tidygeocoder::geo(addresses <- paste(names2, "Spain"),
+tidygeocoder::geo(addresses <- paste(names[1:100], "Spain"),
   return_addresses = TRUE,
   full_results = TRUE,
   limit = 1,
   method = "mapquest", mode = "batch", verbose = TRUE
 )
-full
+
+
+library(dplyr)
+library(tibble)
+library(tidygeocoder)
+
+# create a dataframe with addresses
+some_addresses <- tribble(
+  ~name,
+  ~addr,
+  "White House",
+  "1600 Pennsylvania Ave NW, Washington, DC",
+  "Transamerica Pyramid",
+  "600 Montgomery St, San Francisco, CA 94111",
+  "Willis Tower",
+  "233 S Wacker Dr, Chicago, IL 60606"
+)
+
+# geocode the addresses
+some_addresses %>%
+  geocode(
+    addr,
+    method = "mapquest",
+    lat = latitude,
+    long = longitude,
+    full_results = TRUE
+  )
+
+

@@ -67,7 +67,6 @@ reverse_batch_mapquest <-
     if (is.null(api_url))
       api_url <-
       get_mapquest_url(mapquest_open = mapquest_open,
-                       batch = TRUE,
                        reverse = TRUE)
     
     # Construct query

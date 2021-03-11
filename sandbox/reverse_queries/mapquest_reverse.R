@@ -53,6 +53,10 @@ full_results_flat
 
 # Test reverse_geo ----
 
+library(tibble)
+
+lat <- 40.4606543
+lon <- -4.205381
 tidygeocoder::reverse_geo(
   lat = lat,
   long = lon,
@@ -80,6 +84,8 @@ fullparams <- tidygeocoder::reverse_geo(
     thumbMaps = FALSE
   )
 )
+
+glimpse(fullparams)
 
 livetest <-
   tidygeocoder::reverse_geo(
@@ -117,6 +123,7 @@ livetest_params <-
     long = c(2.294479, -3.6883445),
     verbose = TRUE,
     full_results = TRUE,
+    mode = 'single',
     limit = 3,
     method = "mapquest",
     custom_query = list(
@@ -145,6 +152,7 @@ address <- some_lonlat %>%
   reverse_geocode(
     long = longitud, lat = latitud, method = "mapquest", address = "dir",
     full_results = TRUE,
+    mode = 'single',
     custom_query = list(
       thumbMaps = FALSE
     ),

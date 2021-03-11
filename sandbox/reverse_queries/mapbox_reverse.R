@@ -45,6 +45,10 @@ full_results_flat <-
   )
 
 # Test reverse_geo ----
+lat <- 40.4055517
+lon <- -3.6802152
+
+library(tibble)
 
 # Error
 tidygeocoder::reverse_geo(

@@ -18,6 +18,7 @@ soup <-
     )
   )
 
+soup$status_code
 raw_results <-
   jsonlite::fromJSON(httr::content(soup, as = "text", encoding = "UTF-8"))
 
@@ -44,8 +45,11 @@ full_results_flat <-
     flatten = TRUE
   )
 full_results_flat
-# Test geo ----
 
+
+# Test geo ----
+library(tibble)
+addr <- "Times Square, NY"
 livetest <-
   tidygeocoder::geo(
     address = addr,
@@ -88,6 +92,7 @@ livetest_params <-
     address = c("Santiago de Compostela; Spain", "Nieva"),
     verbose = TRUE,
     full_results = TRUE,
+    mode = 'single',
     limit = 2,
     custom_query = list(
       intlMode = "1BOX",
@@ -120,20 +125,10 @@ lat_longs <- some_addresses %>%
     addr,
     method = "mapquest",
     lat = latitude,
+    mode = 'single',
     long = longitude,
     full_results = TRUE
   )
 
 lat_longs
 
-# Force batch
-some_addresses %>%
-  geocode(
-    addr,
-    method = "mapquest",
-    lat = latitude,
-    long = longitude,
-    full_results = TRUE,
-    mode = "batch",
-    verbose = TRUE
-  )

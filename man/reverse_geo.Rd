@@ -89,7 +89,7 @@ return_addresses to FALSE does not prevent this.}
 Note that Geocodio batch geocoding results are flattened regardless.}
 
 \item{batch_limit}{limit to the number of addresses in a batch geocoding query.
-Both geocodio and census batch geocoders have a 10,000 address limit so this
+Both geocodio and census batch geocoders have a 10,000 limit so this
 is the default.}
 
 \item{verbose}{if TRUE then detailed logs are output to the console}

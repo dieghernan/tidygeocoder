@@ -111,6 +111,7 @@ test_that("reverse geocode null/empty addresses", {
   expect_identical(reverse_geo(lat =" ", long = " ", method = 'google', return_coords = FALSE, no_query = TRUE), NA_result)
   expect_identical(reverse_geo(lat = " ", long = " ", method = 'opencage', return_coords = FALSE, no_query = TRUE), NA_result)
   expect_identical(reverse_geo(lat = " ", long = " ", method = 'mapbox', return_coords = FALSE, no_query = TRUE), NA_result)
+  expect_identical(reverse_geo(lat = " ", long = " ", method = 'mapquest', return_coords = FALSE, no_query = TRUE), NA_result)
   
   
   # Test with tibble
@@ -125,11 +126,13 @@ test_that("reverse geocode null/empty addresses", {
   expect_identical(colnames(result), expected_colnames)
   expect_identical(colnames(reverse_geocode(NA_data, lat = lat, long = lon, method = 'google', no_query = TRUE)), expected_colnames)
   expect_identical(colnames(reverse_geocode(NA_data, lat = lat, long = lon, method = 'opencage', no_query = TRUE)), expected_colnames)
+  expect_identical(colnames(reverse_geocode(NA_data, lat = lat, long = lon, method = 'mapquest', no_query = TRUE)), expected_colnames)
   
   # make sure geo_method is NA when address is NA
   expect_equal(nrow(result), nrow(NA_data)) # check dataframe length
   expect_equal(nrow(reverse_geocode(NA_data, lat = lat, long = lon, method = 'google', no_query = TRUE)), nrow(NA_data))
   expect_equal(nrow(reverse_geocode(NA_data, lat = lat, long = lon, method = 'opencage', no_query = TRUE)), nrow(NA_data))
+  expect_equal(nrow(reverse_geocode(NA_data, lat = lat, long = lon, method = 'mapquest', no_query = TRUE)), nrow(NA_data))
   
   # Test batch limit
   
