@@ -70,7 +70,8 @@ get_coord_parameters <- function(custom_query, method, lat, long) {
 #'   \item \code{"mapbox"}: Commercial Mapbox geocoder service. Requires an API Key to
 #'      be stored in the "MAPBOX_API_KEY" environmental variable.
 #'   \item \code{"mapquest"}: Commercial MapQuest geocoder service. Requires an 
-#'      API Key to be stored in the "MAPQUEST_API_KEY" environmental variable.
+#'      API Key to be stored in the "MAPQUEST_API_KEY" environmental variable. 
+#'      Can perform batch geocoding.
 #' }
 #' @param address name of address column (output data)
 #' @param limit number of results to return per coordinate. Note that not all methods support
@@ -98,7 +99,7 @@ get_coord_parameters <- function(custom_query, method, lat, long) {
 #'    Note that Geocodio batch geocoding results are flattened regardless.
 #' @param batch_limit limit to the number of addresses in a batch geocoding query.
 #'  Both geocodio and census batch geocoders have a 10,000 limit so this
-#'  is the default.
+#'  is the default. MapQuest has a 100 address limit.
 #' @param verbose if TRUE then detailed logs are output to the console
 #' @param no_query if TRUE then no queries are sent to the geocoder and verbose is set to TRUE
 #' @param custom_query API-specific parameters to be used, passed as a named list 

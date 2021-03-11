@@ -67,12 +67,13 @@ tidygeocoder::geo(
 tidygeocoder::geo(
   address = c("Denver,CO", "Boulder,CO", "Santiago"),
   method = "mapquest", mode = "batch", verbose = TRUE,
-  mapquest_open = TRUE
+  mapquest_open = TRUE,
+  lat = "latitude", long = "longitude"
 )
 
 # Single address
-tidygeocoder::geo(address = "Segovia", method = "mapquest", full_results = TRUE)
-tidygeocoder::geo(address = "Segovia", method = "mapquest", mode = "batch", full_results = TRUE)
+tidygeocoder::geo(address = "Segovia", method = "mapquest", full_results = TRUE, lat = "latitude", long = "longitude")
+tidygeocoder::geo(address = "Segovia", method = "mapquest", mode = "batch", full_results = TRUE, lat = "latitude", long = "longitude")
 
 
 
@@ -143,5 +144,3 @@ some_addresses %>%
     long = longitude,
     full_results = TRUE
   )
-
-

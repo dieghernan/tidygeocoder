@@ -52,7 +52,8 @@ each geocoder service for usage details and limitations.
   \item \code{"mapbox"}: Commercial Mapbox geocoder service. Requires an API Key to
      be stored in the "MAPBOX_API_KEY" environmental variable.
   \item \code{"mapquest"}: Commercial MapQuest geocoder service. Requires an 
-     API Key to be stored in the "MAPQUEST_API_KEY" environmental variable.
+     API Key to be stored in the "MAPQUEST_API_KEY" environmental variable. 
+     Can perform batch geocoding.
 }}
 
 \item{address}{name of address column (output data)}
@@ -90,7 +91,7 @@ Note that Geocodio batch geocoding results are flattened regardless.}
 
 \item{batch_limit}{limit to the number of addresses in a batch geocoding query.
 Both geocodio and census batch geocoders have a 10,000 limit so this
-is the default.}
+is the default. MapQuest has a 100 address limit.}
 
 \item{verbose}{if TRUE then detailed logs are output to the console}
 

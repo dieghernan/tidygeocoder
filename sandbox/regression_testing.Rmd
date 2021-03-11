@@ -186,6 +186,7 @@ geocode_mapquest1 <- sample1 %>%
   geocode(
     address = address,
     method = 'mapquest',
+    mode = 'single',
     full_results = TRUE,
     verbose = TRUE
   )

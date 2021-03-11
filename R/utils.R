@@ -149,10 +149,14 @@ extract_reverse_results <- function(method, response, full_results = TRUE, flatt
   # Limit is not even a param, see:
   # https://developer.mapquest.com/documentation/geocoding-api/reverse/get/
   if (method == 'mapquest') {
-    address <-
-      as.character(address[, names(address) %in% c('street', paste0('adminArea', seq(6, 1))), ])
-    address <- address[address != '']
-    address <- paste0(address, collapse = ', ')
+    address <-  address[, names(address) %in% c('street', paste0('adminArea', seq(6, 1))), ]
+    
+    address <- as.character(apply(address, 1, function(x) {
+      y <- unique(as.character(x))
+      y <- y[!y %in% c('', 'NA')]
+      paste0(y, collapse = ', ')
+    }))
+    address[address == 'NA'] <- NA
     address <- data.frame(full_address = address)
   }
   

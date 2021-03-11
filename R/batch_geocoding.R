@@ -159,10 +159,13 @@ batch_mapquest <- function(unique_addresses, lat = 'lat', long = 'long', timeout
   if (nrow(address_df) == 1) {
     
     results <- geo(address = address_df[['address']], method = 'mapquest',
-                  mode = 'single', lat = lat, long = long, 
-                  full_results = full_results, custom_query = custom_query, 
+                  mode = 'single', full_results = full_results, custom_query = custom_query, 
                   verbose = verbose, api_url = api_url, limit = limit, 
                   mapquest_open = mapquest_open)
+    
+    # rename lat/long columns
+    names(results)[names(results) == 'lat'] <- lat
+    names(results)[names(results) == 'long'] <- long
     
     return(results[!names(results) %in% 'address'])
     

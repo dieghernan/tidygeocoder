@@ -21,12 +21,24 @@ soup <-
 response <-
   jsonlite::fromJSON(httr::content(soup, as = "text", encoding = "UTF-8"))
 
-results_min <-
-  tidygeocoder:::extract_reverse_results(selected_method, response,
-    full_results = FALSE
-  )
+address <- response$results$locations[[1]]
 
-results_min
+address <- address[, names(address) %in% c("street", paste0("adminArea", seq(6, 1))), ]
+
+address <- as.character(apply(address, 1, function(x) {
+  y <- unique(as.character(x))
+  y <- y[!y %in% c("", "NA")]
+  paste0(y, collapse = ", ")
+}))
+
+address[address != "NA"] <- NA
+
+address <- data
+
+
+tidygeocoder:::extract_reverse_results(selected_method, response,
+  full_results = FALSE
+)
 
 results_full <-
   tidygeocoder:::extract_reverse_results(selected_method, response)
@@ -60,6 +72,7 @@ lon <- -4.205381
 tidygeocoder::reverse_geo(
   lat = lat,
   long = lon,
+  address = "dir",
   verbose = TRUE,
   method = "mapquest"
 )
@@ -123,7 +136,7 @@ livetest_params <-
     long = c(2.294479, -3.6883445),
     verbose = TRUE,
     full_results = TRUE,
-    mode = 'single',
+    mode = "single",
     limit = 3,
     method = "mapquest",
     custom_query = list(
@@ -152,7 +165,7 @@ address <- some_lonlat %>%
   reverse_geocode(
     long = longitud, lat = latitud, method = "mapquest", address = "dir",
     full_results = TRUE,
-    mode = 'single',
+    mode = "single",
     custom_query = list(
       thumbMaps = FALSE
     ),
