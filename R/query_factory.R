@@ -109,6 +109,7 @@ get_api_url <- function(method, reverse = FALSE, return_type = 'locations',
          "tomtom" = get_tomtom_url(reverse = reverse),
          )
 
+
   if (length(api_url) == 0) stop('API URL not found')
   return(api_url)
 }
@@ -169,11 +170,11 @@ get_api_query <- function(method, generic_parameters = list(), custom_parameters
       )
   }
   
-  # Throw error if user passes the same parameter via a custom api-specific list 
-  # as they already did through the 'generic' parameters (address, street, etc.)
+  # Allow custom API parameters to overwrite the generic parameters but throw a warning
   for (custom_name in names(custom_parameters)) {
     if (custom_name %in% names(main_api_parameters)) {
-      stop(paste0("Custom API Parameter '", custom_name, "' was already specified"))
+      warning(paste0("Custom API Parameter '", custom_name, "' was already specified"))
+      main_api_parameters[[custom_name]] <- NULL # remove the parameter from main parameters
     }
   }
   
