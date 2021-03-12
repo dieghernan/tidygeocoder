@@ -2,8 +2,8 @@ api_url <- NULL
 timeout <- 20
 limit <- 1
 
-lat <- runif(800,38,42)
-long <- runif(800,-6,1)
+lat <- runif(10,38,42)
+long <- runif(10,-6,1)
 
 # white house, toronto, junk lat/lng
 # lat <- c(38.89586, 300, 43.6534817)
@@ -43,14 +43,25 @@ for (index in seq_len(length(lat))) {
 }
 
 # Query API
-raw_content <- query_api(api_url, query_parameters,
-  mode = "list",
-  input_list = address_list, timeout = timeout
-)
+raw_content <- httr::POST(api_url, query = query_parameters, 
+           body = as.list(address_list), encode = 'json', httr::timeout(60 * timeout))
 
+raw_content$status_code
+httr::headers(raw_content)$location
+tracking_id <- httr::headers(raw_content)[['tracking-id']]
+query_parameters['key']
+a <- query_api(paste0('https://api.tomtom.com/search/2/batch/',tracking_id),
+               query_parameters = query_parameters['key'])
+batch_q <- c(query_parameters['key'],
+                waitTimeSeconds = 120)
+  
+  
+nn <- httr::GET(paste0('https://api.tomtom.com/',httr::headers(raw_content)$location))
+nn2 <- httr::content(nn)
 # Note that flatten here is necessary in order to get rid of the
 # nested dataframes that would cause dplyr::bind_rows (or rbind) to fail
-content <- jsonlite::fromJSON(raw_content)
+content_txt <- httr::content(raw_content, as = 'text', encoding = 'UTF-8')
+content <- jsonlite::fromJSON(content_txt, flatten = TRUE)
 
 # result_list is a list of dataframes
 result_list <- content$batchItems$response$addresses

@@ -277,8 +277,6 @@ reverse_geo <- function(lat, long, method = 'osm', address = address, limit = 1,
     api_url <- paste0(api_url, custom_query[["to_url"]], ".json")
     # Remove semicolons (Reserved for batch)
     api_url <- gsub(";", ",", api_url)
-    # Delete helper from query -- could be confusing and not replicable
-    custom_query <- custom_query[!names(custom_query) %in% c('to_url')]
   }
   
   # Set min_time if not set based on usage limit of service

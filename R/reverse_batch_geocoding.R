@@ -5,7 +5,7 @@
 # ... are arguments passed from the reverse_geo() function
 # https://www.geocod.io/docs/#batch-geocoding
 reverse_batch_geocodio <- function(lat, long, address = 'address', timeout = 20, full_results = FALSE, custom_query = list(),
-verbose = FALSE, api_url = NULL, geocodio_v = 1.6, limit = 1, ...) {
+                                   verbose = FALSE, api_url = NULL, geocodio_v = 1.6, limit = 1, ...) {
   
   if (is.null(api_url)) api_url <- get_geocodio_url(geocodio_v, reverse = TRUE)
   
@@ -16,8 +16,8 @@ verbose = FALSE, api_url = NULL, geocodio_v = 1.6, limit = 1, ...) {
   
   # Query API
   raw_content <- query_api(api_url, query_parameters, mode = 'list', 
-                  input_list = paste0(as.character(lat), ',', as.character(long)), 
-                  timeout = timeout)
+                           input_list = paste0(as.character(lat), ',', as.character(long)), 
+                           timeout = timeout)
   
   # Note that flatten here is necessary in order to get rid of the
   # nested dataframes that would cause dplyr::bind_rows (or rbind) to fail
@@ -38,12 +38,13 @@ verbose = FALSE, api_url = NULL, geocodio_v = 1.6, limit = 1, ...) {
   else return(cbind(results[address], results[!names(results) %in% c(address)]))
 }
 
-# Reverse batch geocoding with HERE
+# Reverse HERE geocoding with geocodio
 # ... are arguments passed from the reverse_geo() function
 # https://developer.here.com/documentation/batch-geocoder/dev_guide/topics/introduction.html
 reverse_batch_here <- function(lat, long, address = 'address', timeout = 20, full_results = FALSE, custom_query = list(),
-                                  verbose = FALSE, api_url = NULL, geocodio_v = 1.6, limit = 1,
-                                  here_request_id = NULL, ...) {
+                               verbose = FALSE, api_url = NULL, geocodio_v = 1.6, limit = 1,
+                               here_request_id = NULL, ...) {
+  
   # https://developer.here.com/documentation/batch-geocoder/dev_guide/topics/quick-start-batch-geocode.html
   # Specific endpoint
   if (is.null(api_url)) api_url <- 'https://batch.geocoder.ls.hereapi.com/6.2/jobs'
