@@ -222,6 +222,7 @@ batch_here <- function(unique_addresses, lat = 'lat', long = 'long', timeout = 2
   
   # Batch timer
   init_process <- Sys.time()
+  
   if (!is.null(here_request_id)){
     if (verbose) message("HERE: Requesting a previous job")
     
