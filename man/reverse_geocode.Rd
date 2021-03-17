@@ -26,8 +26,8 @@ reverse_geocode(
 \item{return_coords}{if TRUE then coordinates with standard names will be returned
 This is defaulted to FALSE because the coordinates are already in the input dataset}
 
-\item{unique_only}{if TRUE then only unique coordinates and results will be returned. 
-The input dataframe's format is not preserved. Coordinates will also be returned if 
+\item{unique_only}{if TRUE then only unique coordinates and results will be returned.
+The input dataframe's format is not preserved. Coordinates will also be returned if
 TRUE (overrides return_coords argument).}
 
 \item{...}{arguments passed to the \code{\link{reverse_geo}} function}
@@ -36,11 +36,11 @@ TRUE (overrides return_coords argument).}
 input dataframe (.tbl) with geocoder results appended as columns
 }
 \description{
-Takes a dataframe containing coordinates (latitude and longitude) and returns 
+Takes a dataframe containing coordinates (latitude and longitude) and returns
 the reverse geocoding query results from a specified service by using the
 \code{\link{reverse_geo}} function. See example usage in \code{vignette("tidygeocoder")}.
 
-This function passes all additional parameters (\code{...}) to the 
+This function passes all additional parameters (\code{...}) to the
 \code{\link{reverse_geo}} function, so you can refer to its documentation for more details
 on possible arguments.
 }
@@ -50,11 +50,11 @@ library(tibble)
 reverse_geocode(
   tibble(
     latitude = c(38.895865, 43.6534817),
-    longitude = c(-77.0307713,-79.3839347)
+    longitude = c(-77.0307713, -79.3839347)
   ),
   lat = latitude,
   long = longitude,
-  method = 'osm',
+  method = "osm",
   full_results = TRUE,
   verbose = TRUE
 )

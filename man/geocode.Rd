@@ -23,7 +23,7 @@ geocode(
 \arguments{
 \item{.tbl}{dataframe containing addresses}
 
-\item{address}{single line street address column name. Do not combine with 
+\item{address}{single line street address column name. Do not combine with
 address component arguments (street, city, county, state, postalcode, country)}
 
 \item{street}{street address column name}
@@ -45,8 +45,8 @@ address component arguments (street, city, county, state, postalcode, country)}
 \item{return_addresses}{if TRUE then addresses with standard names will be returned
 This is defaulted to FALSE because the address fields are already in the input dataset}
 
-\item{unique_only}{if TRUE then only unique addresses and results will be returned. 
-The input dataframe's format is not preserved. Addresses will also be returned if 
+\item{unique_only}{if TRUE then only unique addresses and results will be returned.
+The input dataframe's format is not preserved. Addresses will also be returned if
 TRUE (overrides return_addresses argument).}
 
 \item{...}{arguments passed to the \code{\link{geo}} function}
@@ -55,32 +55,38 @@ TRUE (overrides return_addresses argument).}
 input dataframe (.tbl) with geocoder results appended as columns
 }
 \description{
-Takes a dataframe containing addresses as an input and returns 
+Takes a dataframe containing addresses as an input and returns
 the results from a specified geocoder service in a dataframe format using the
 \code{\link{geo}} function. See example usage in \code{vignette("tidygeocoder")}.
 
-This function passes all additional parameters (\code{...}) to the 
+This function passes all additional parameters (\code{...}) to the
 \code{\link{geo}} function, so you can refer to its documentation for more details
 on possible arguments.
 
-Note that the arguments used for specifying address columns (address, 
+Note that the arguments used for specifying address columns (address,
 street, city, county, state, postalcode, and country) accept either
-quoted or unquoted column names (ie. "address_col" and address_col are 
+quoted or unquoted column names (ie. "address_col" and address_col are
 both acceptable).
 }
 \examples{
 \donttest{
 library(dplyr)
-sample_addresses[1:2,] \%>\% geocode(addr)
+sample_addresses[1:2, ] \%>\% geocode(addr)
 
-louisville[1:2,] \%>\% geocode(street = street, city = city, state = state,
-  postalcode = zip)
+louisville[1:2, ] \%>\% geocode(
+  street = street, city = city, state = state,
+  postalcode = zip
+)
 
-sample_addresses[8:9,] \%>\% geocode(addr, method = 'osm',
-  lat = 'lattes', long = 'longos')
+sample_addresses[8:9, ] \%>\% geocode(addr,
+  method = "osm",
+  lat = "lattes", long = "longos"
+)
 
-sample_addresses[4:5,] \%>\% geocode(addr, method = 'cascade',
-  lat = latitude, long = longitude)
+sample_addresses[4:5, ] \%>\% geocode(addr,
+  method = "cascade",
+  lat = latitude, long = longitude
+)
 }
 }
 \seealso{

@@ -16,11 +16,11 @@ A tibble dataframe
 }
 \source{
 Links to API documentation for each geocoder service are below.
-\itemize{ 
+\itemize{
  \item \href{https://www.census.gov/programs-surveys/geography/technical-documentation/complete-technical-documentation/census-geocoder.html}{Census}
  \item \href{https://nominatim.org/release-docs/develop/api/Search/}{Nominatim} ("osm")
  \item \href{https://www.geocod.io/docs/}{Geocodio}
- \item \href{https://locationiq.com/docs}{Location IQ} ("iq") 
+ \item \href{https://locationiq.com/docs}{Location IQ} ("iq")
  \item \href{https://developers.google.com/maps/documentation/geocoding/overview}{Google}
  \item \href{https://opencagedata.com/api}{OpenCage}
  \item \href{https://docs.mapbox.com/api/search/geocoding/}{Mapbox}
@@ -34,17 +34,17 @@ Links to API documentation for each geocoder service are below.
 api_parameter_reference
 }
 \description{
-This dataset contains the mapping that allows this package to use a 
-universal syntax to specify parameters for different geocoder services. 
+This dataset contains the mapping that allows this package to use a
+universal syntax to specify parameters for different geocoder services.
 Note that latitude nad longitude input parameters for reverse geocoding
 are not in this dataset and are instead handled directly by the \code{reverse_geo} function.
 
 The \code{generic_name} column is a universal parameter name that is shared between services.
 The \code{api_name} column is the parameter name for the given geocoder service specified by the
-\code{method} column. When \code{generic_name} is missing 
+\code{method} column. When \code{generic_name} is missing
 this means the parameter is specific to that geocoder service.
- 
-Reference the documentation for \code{\link{geo}} for more information. 
+
+Reference the documentation for \code{\link{geo}} for more information.
 Also reference \code{vignette("tidygeocoder")} for more details on constructing API queries.
 }
 \seealso{

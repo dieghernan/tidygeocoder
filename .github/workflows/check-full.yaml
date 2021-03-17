@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - main
-      - bing
+      - lintr
   pull_request:
     branches:
       - master

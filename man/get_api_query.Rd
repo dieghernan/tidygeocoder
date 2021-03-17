@@ -19,18 +19,19 @@ API parameters as a named list
 \description{
 The geocoder API query is created using universal "generic" parameters
 and optional api-specific "custom" parameters. Generic parameters
-are converted into api parameters using the  \code{\link{api_parameter_reference}} 
-dataset. 
+are converted into api parameters using the  \code{\link{api_parameter_reference}}
+dataset.
 
-The \code{\link{query_api}} function executes the queries created 
+The \code{\link{query_api}} function executes the queries created
 by this function.
 }
 \examples{
-get_api_query("osm", list(address = 'Hanoi, Vietnam'))
+get_api_query("osm", list(address = "Hanoi, Vietnam"))
 
-get_api_query("census", list(street = '11 Wall St', city = "NY", state = 'NY'),
-  list(benchmark = "Public_AR_Census2010"))
-
+get_api_query(
+  "census", list(street = "11 Wall St", city = "NY", state = "NY"),
+  list(benchmark = "Public_AR_Census2010")
+)
 }
 \seealso{
 \code{\link{query_api}} \code{\link{geo}} \code{\link{api_parameter_reference}}
